@@ -9,7 +9,7 @@ import "unsafe"
 import "fmt"
 
 type s_block struct {
-	size int64
+	size int
 	next *s_block
 	prev *s_block
 	free int
@@ -19,7 +19,7 @@ type s_block struct {
 var base *s_block
 const BLOCK_SIZE int = 40
 
-func split_block(block s_block, size int64){
+func split_block(block s_block, size int){
 	var split s_block
 	block.size = size
 	split.next = block.next
