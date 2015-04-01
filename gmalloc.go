@@ -23,7 +23,7 @@ const BLOCK_SIZE int = 40
 
 /* Split the block struct by size 'size'*/
 func split_block(block s_block, size int){
-	var split s_block
+	var split s_block // incorrect need to allocate specific amount of memory
 	block.size = size
 	split.next = block.next
 	split.prev = &block
@@ -38,7 +38,7 @@ func extend_heap(last s_block, size int) s_block{
 	var extend_length int = BLOCK_SIZE + size
 	block = (*s_block)(C.sbrk(0))
 	/* NEW END OF DATA */
-	newEnd = (*int)(C.sbrk(extend_length))
+	newEnd = (*int)(C.sbrk(extend_length)) //this currently fails
 	if *newEnd < 0 {
 		err := errors.New("sbrk fails")
 	}
@@ -50,7 +50,24 @@ func extend_heap(last s_block, size int) s_block{
 }
 /* Allocate memory */
 func gmalloc(size int) unsafe.Pointer{
-	return unsafe.Pointer(base)
+	var block, last s_block
+	if base != nil {
+		last = *base
+		/* SEARCH NEXT BLOCK */
+		for &block != nil && block.free == 0 && block.size <= size{
+			last = block
+			block = *block.next
+		}
+		block := extend_heap(last, size)
+
+
+	} else {
+		/* SHOULD ONLY BE ON FIRST CALL */
+		block := extend_heap(last, size)
+		*base = block
+	}
+
+	return unsafe.Pointer(&block.data)
 }
 
 func main(){
