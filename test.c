@@ -5,9 +5,9 @@
 
 int main(int argc, char **argv){
   int *data;
-	data = (int*)gmalloc(4);
+  data = (int*)gmalloc(4);
 
   printf("Malloc works with no error\n");
-	return 0;
+  return 0;
 }
 
