@@ -1,9 +1,9 @@
 package main
 
-
 /*
 #include <unistd.h>
 #include <stdint.h>
+#include <stdlib.h>
 */
 import "C"
 import "unsafe"
@@ -38,9 +38,12 @@ func extend_heap(last s_block, size int) s_block{
 	var extend_length int = BLOCK_SIZE + size
 	block = (*s_block)(C.sbrk(0))
 	/* NEW END OF DATA */
-	newEnd = (*int)(C.sbrk(extend_length)) //this currently fails
+	newEnd = (*int)(C.sbrk(C.intptr_t(extend_length)))
 	if *newEnd < 0 {
 		err := errors.New("sbrk fails")
+		if err != nil {
+			fmt.Print(err)
+		}
 	}
 	block.size = size
 	block.prev = &last
@@ -59,8 +62,6 @@ func gmalloc(size int) unsafe.Pointer{
 			block = *block.next
 		}
 		block := extend_heap(last, size)
-
-
 	} else {
 		/* SHOULD ONLY BE ON FIRST CALL */
 		block := extend_heap(last, size)
