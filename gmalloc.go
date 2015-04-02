@@ -52,6 +52,7 @@ func extend_heap(last s_block, size int) s_block{
 	return *block
 }
 /* Allocate memory */
+//export gmalloc
 func gmalloc(size int) unsafe.Pointer{
 	var block, last s_block
 	if base != nil {
