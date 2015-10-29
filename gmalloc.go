@@ -28,7 +28,7 @@ func split_block(block s_block, size int){
 	split.next = block.next
 	split.prev = &block
 	split.free = 1
-	split.size = block.size - size - BLOCK_SIZE
+	split.size = uintptr(unsafe.Pointer(&block.size)) - unsafe.Sizeof(&size) - unsafe.Sizeof(&BLOCK_SIZE)
 }
 
 /* Extend heap by size size */
@@ -77,4 +77,3 @@ func main(){
 	data = (*int) (gmalloc(4))
 	fmt.Println("Malloc sanity test passes")
 }
-
